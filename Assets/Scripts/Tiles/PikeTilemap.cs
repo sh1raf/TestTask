@@ -15,76 +15,62 @@ public class PikeTilemap : MonoBehaviour
 
     [SerializeField] private float _timeOfStaying;
 
-    [SerializeField] private float _couldownPikes;
+    private bool _activationStarted;
+    private bool _pikeIsActivated;
 
-    private Vector3Int _currentTileVector;
+    private Vector3Int _currentTileVector = new Vector3Int(0,0,0);
     private PikeTile _currentTile;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent<Player>(out Player player))
         {
-            Debug.Log("OnTrigger");
-            _currentTileVector = _tilemap.WorldToCell(player.transform.position);
             _currentTile = _tilemap.GetTile<PikeTile>(_currentTileVector);
 
-            if (_currentTile != null && _currentTile.ActivationStarted == false)
-                StartCoroutine(Activation(_currentTile, _currentTileVector));
+            if (_currentTile != null && _activationStarted == false)
+            {
+                StartCoroutine(Activation());
+            }
         }
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.TryGetComponent<Player>(out Player player) && _currentTile != null && _currentTile.PikeActivated && _currentTile.CouldownStarted == false)
+        if (other.TryGetComponent<Player>(out Player player) && _currentTile != null && _pikeIsActivated)
         {
             player.TakingDamage(_damage);
-            StartCoroutine(Couldown(_currentTile));
+            _pikeIsActivated = false;
         }
+        if (_activationStarted == false)
+            StartCoroutine(Activation());
     }
 
-    private IEnumerator Activation(PikeTile currentTile, Vector3Int currentTileVector)
+    private IEnumerator Activation()
     {
         Debug.Log("Activation");
-        currentTile.ActivationStarted = true;
+        _activationStarted = true;
 
         for (int i = 0; i < _framesToStayAnimation; i++)
         {
 
-            _tilemap.SetAnimationFrame(currentTileVector, i);
+            _tilemap.SetAnimationFrame(_currentTileVector, i);
 
             yield return new WaitForSeconds(_speedOfFrames);
         }
 
-        _currentTile.PikeActivated = true;
+        _pikeIsActivated = true;
 
         yield return new WaitForSeconds(_timeOfStaying);
 
-        for(int i = _tilemap.GetAnimationFrame(currentTileVector); i < _fullFramesOfAnimation; i++)
+        for(int i = _tilemap.GetAnimationFrame(_currentTileVector); i < _fullFramesOfAnimation; i++)
         {
 
-            _tilemap.SetAnimationFrame(currentTileVector, i);
+            _tilemap.SetAnimationFrame(_currentTileVector, i);
 
             yield return new WaitForSeconds(_speedOfFrames);
         }
 
-        currentTile.ActivationStarted = false;
-        currentTile.PikeActivated = false;
-    }
-
-    private IEnumerator Couldown(PikeTile currentTile)
-    {
-        currentTile.PikeActivated = false;
-        currentTile.CouldownStarted = true;
-        Debug.Log("Couldown");
-
-        var expiredTime = 0f;
-
-        while(expiredTime < _couldownPikes)
-        {
-            expiredTime+=Time.deltaTime;
-            yield return null;
-        }
-        currentTile.CouldownStarted = false;
-        currentTile.PikeActivated = true;
+        _activationStarted = false;
+        _pikeIsActivated = false;
     }
 }

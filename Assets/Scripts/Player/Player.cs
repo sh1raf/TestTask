@@ -8,9 +8,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private int _maxHealths;
 
-    private int _currentHealth;
-
-    private Transform _currentPosition;  
+    private int _currentHealth; 
 
     public event UnityAction TakeDamage;
 
