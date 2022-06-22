@@ -8,13 +8,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - SideWalls
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - UpDownWalls
+  - Player
+  - Entities
+  - Traps
   - 
   - 
   - 

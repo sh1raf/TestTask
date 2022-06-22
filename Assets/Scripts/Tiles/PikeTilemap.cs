@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
+[RequireComponent(typeof(Collider2D))]
 public class PikeTilemap : MonoBehaviour
 {
     [SerializeField] private Tilemap _tilemap;
@@ -20,6 +20,14 @@ public class PikeTilemap : MonoBehaviour
 
     private Vector3Int _currentTileVector = new Vector3Int(0,0,0);
     private PikeTile _currentTile;
+
+    private void Start()
+    {
+        Collider2D pikeCollider = GetComponent<Collider2D>();
+        var player = FindObjectOfType<Player>();
+        var PlayerCollider = player.GetComponent<BoxCollider2D>();
+        Physics2D.IgnoreCollision(pikeCollider, PlayerCollider);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

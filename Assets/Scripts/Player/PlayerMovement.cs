@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] AnimationCurve _dashCurve;
 
-
     [SerializeField] private float _travelSpeed;
 
     [SerializeField] private float _dashDuration;
@@ -19,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
     
     private bool _watchRight = true;
 
-    private Vector2 _lastDirection = new Vector2(1,0);
     public bool DashActivated { get; private set; } = false;
 
     private void Start()
@@ -29,13 +27,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.collider.GetComponent<Wall>())
+        if(collision.collider.GetComponent<SideWall>())
             _inWall = true;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.collider.GetComponent<Wall>())
+        if (collision.collider.GetComponent<SideWall>())
             _inWall = false;
     }
 
