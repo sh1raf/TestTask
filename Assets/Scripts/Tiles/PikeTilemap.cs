@@ -23,7 +23,7 @@ public class PikeTilemap : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent<Player>(out Player player))
+        if (other.TryGetComponent<Entity>(out Entity entity))
         {
             _currentTile = _tilemap.GetTile<PikeTile>(_currentTileVector);
 
@@ -36,13 +36,14 @@ public class PikeTilemap : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.TryGetComponent<Player>(out Player player) && _currentTile != null && _pikeIsActivated)
+        if (other.TryGetComponent<Entity>(out Entity entity) && _currentTile != null && _pikeIsActivated)
         {
-            player.TakingDamage(_damage);
+            entity.TakingDamage(_damage);
             _pikeIsActivated = false;
+
+            if (_activationStarted == false)
+                StartCoroutine(Activation());
         }
-        if (_activationStarted == false)
-            StartCoroutine(Activation());
     }
 
     private IEnumerator Activation()

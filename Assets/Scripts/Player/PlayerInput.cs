@@ -15,10 +15,10 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(_dashKey))
+        if (Input.GetKeyDown(_dashKey) && _playerMovement.DashActivated == false)
         {
             Debug.Log("Key Downed");
-            _playerMovement.StartCoroutine("Dash");
+            StartCoroutine(_playerMovement.Dash());
         }
     }
 

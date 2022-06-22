@@ -24,6 +24,4 @@ MonoBehaviour:
   m_MaxSpeed: 0
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
-  ActivationStarted: 0
-  CouldownStarted: 0
+  m_TileColliderType: 1

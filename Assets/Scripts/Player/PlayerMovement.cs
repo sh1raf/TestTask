@@ -2,42 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] AnimationCurve _dashCurve;
+
+
     [SerializeField] private float _travelSpeed;
 
     [SerializeField] private float _dashDuration;
     [SerializeField] private float _dashForce;
 
-    //[SerializeField] private Animator _animator;
+    private Rigidbody2D _rb;
 
-    [SerializeField] AnimationCurve _dashCurve;
+    private bool _inWall = false;
     
     private bool _watchRight = true;
 
     private Vector2 _lastDirection = new Vector2(1,0);
+    public bool DashActivated { get; private set; } = false;
+
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.GetComponent<Wall>())
+            _inWall = true;
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider.GetComponent<Wall>())
+            _inWall = false;
+    }
 
     public void Move(Vector2 moveDirection)
     {
-        transform.Translate(moveDirection * Time.fixedDeltaTime * _travelSpeed);
-
-        //_animator.SetFloat("moveX", moveDirection.x);
+        _rb.velocity = moveDirection * Time.deltaTime * _travelSpeed;
 
         if (moveDirection.x < 0 && _watchRight == true)
-        {
             MirrorDirection();
-            _lastDirection = new Vector2(-1, 0);
-        }
+
         if (moveDirection.x > 0 && _watchRight != true)
-        {
             MirrorDirection();
-            _lastDirection = new Vector2(1, 0);
-        }
     }
 
     public IEnumerator Dash()
     {
+        DashActivated = true;
         Debug.Log("Coroutine has been started");
 
         float progress = 0;
@@ -46,11 +61,13 @@ public class PlayerMovement : MonoBehaviour
         {
             expiredTime += Time.deltaTime;
             progress = expiredTime / _dashDuration;
-
-            transform.Translate(_lastDirection * Time.deltaTime * _dashCurve.Evaluate(progress) * _dashForce);
+            if(_inWall == false)
+                transform.Translate(new Vector2(transform.localScale.x, 0) * Time.deltaTime * _dashCurve.Evaluate(progress) * _dashForce);
 
             yield return null;
         }
+
+        DashActivated = false;
     }
 
     private void MirrorDirection()
